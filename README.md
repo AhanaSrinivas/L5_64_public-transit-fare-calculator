@@ -1,56 +1,85 @@
 # Lab 5: Static Code Analysis — Public Transit Fare Calculator
 
-**Your file:** `fare_calculator.py`
+**Name:** Ahana Srinivas Sivaram  
+**SRN:** PES1UG24CS910  
+**Section:** H  
+**Lab:** Lab 5 — Static Code Analysis
 
-Follow the lab handout for the full instructions.
+## Objective
 
-## About the program
+To improve Python code quality, security, and style using Pylint, Bandit, and Flake8. The tools were used to identify issues in the assigned public transit fare calculator, document the findings, implement fixes, and verify the updated program.
 
-A metro fare calculator. It prices a journey by distance, applies peak, off-peak and concession rules, totals a day's travel, manages smart cards (issue, tap out, top up), picks the cheapest route, makes a ticket checksum, loads stop names from XML, and pushes fares to a gate machine over SSH.
+## About the Program
 
-The code works, but only just. It has quality, style and security problems of the kind Pylint, Flake8 and Bandit are built to find.
+The program simulates a metro fare calculator. It calculates fares based on distance, applies peak/off-peak pricing and concession discounts, calculates daily totals, manages smart cards, finds the cheapest route, generates ticket checksums, loads stop names from XML, and sends fare files to a gate machine over SSH.
 
-## What to do
+## Setup
 
-1. **Install the program's packages** (it uses Paramiko and Cryptography):
-   ```bash
-   python -m pip install paramiko cryptography
-   ```
+Create and activate a Python virtual environment, then install the required packages:
 
-2. **Run it** and read the output carefully:
-   ```bash
-   python fare_calculator.py
-   ```
-   Check whether every fare and total it prints makes sense, then try changing the inputs in `main()` to see what happens. Not every problem in this file is something a tool will flag, so pay attention to output that looks wrong.
+```bash
+python -m pip install pylint bandit flake8 paramiko cryptography defusedxml
+```
 
-3. **Install the tools:**
-   ```bash
-   python -m pip install pylint bandit flake8 defusedxml
-   ```
+## Run the Program
 
-4. **Run the analysis** and save the reports:
-   ```bash
-   python -m pylint fare_calculator.py > pylint_report.txt
-   python -m bandit -r fare_calculator.py > bandit_report.txt
-   python -m flake8 fare_calculator.py > flake8_report.txt
-   ```
+```bash
+python fare_calculator.py
+```
 
-5. **Document the issues** in `issues.md` using this table (at least 4 rows, high and medium severity first):
+The program prints sample fare calculations, smart-card operations, a ticket checksum, and XML stop names.
 
-   | Issue | Type | Line(s) | Description | Fix Approach |
-   |-------|------|---------|-------------|--------------|
-   | ... | ... | ... | ... | ... |
+## Static Code Analysis
 
-6. **Fix the code.** Fix at least 4 of the issues you documented, then rerun all three tools to confirm they are gone. Repeat until you are satisfied. The program should still do its job when you are done.
+The following commands were used to analyse the source and save the reports:
 
-7. **Reflect.** Answer the four reflection questions from the handout in `reflection.md`.
+```bash
+python -m pylint fare_calculator.py > pylint_report.txt
+python -m bandit -r fare_calculator.py > bandit_report.txt
+python -m flake8 fare_calculator.py > flake8_report.txt
+```
+
+The original reports are preserved separately as:
+
+- `pylint_report_before.txt`
+- `bandit_report_before.txt`
+- `flake8_report_before.txt`
+
+The updated reports are `pylint_report.txt`, `bandit_report.txt`, and `flake8_report.txt`.
+
+## Issues Identified and Fixes
+
+The following issues were addressed:
+
+1. **SSH host-key verification:** Replaced automatic acceptance of unknown SSH host keys with system host-key loading and rejection of unknown keys.
+2. **SSH command construction:** Added fare-file validation and shell quoting when constructing the remote command.
+3. **Unsafe XML parsing:** Switched to the `defusedxml` SAX parser.
+4. **Weak checksum algorithm:** Replaced MD5 with SHA-256.
+5. **Daily fare cap bug:** Corrected the daily total calculation so that the returned total cannot exceed the configured cap.
+6. **Code quality and maintainability:** Added docstrings, replaced the lambda assignment with a named function, improved validation, and added a main guard.
+7. **Formatting and style:** Corrected the formatting violations reported by Flake8.
+
+## Verification Results
+
+| Tool | Before | After |
+|---|---|---|
+| Pylint | 5.80/10 | 10.00/10 |
+| Bandit | 5 reported findings | 0 reported findings |
+| Flake8 | 19 violations | 0 violations |
+
+The updated program was executed successfully. The daily total example returns 150, respecting the configured daily cap.
+
+These results describe the checks performed by the tools; a clean static-analysis report does not guarantee the complete absence of bugs or security risks.
 
 ## Deliverables
 
-1. `fare_calculator.py`: your cleaned version, with at least 4 issues fixed.
-2. `issues.md`: the completed issue table.
-3. `reflection.md`: your answers to the reflection questions.
+- `fare_calculator.py` — cleaned and updated source code.
+- `issues.md` — documented issues, their types, locations, descriptions, and fixes.
+- `reflection.md` — reflection on the static-analysis exercise.
+- `pylint_report_before.txt` and `pylint_report.txt`
+- `bandit_report_before.txt` and `bandit_report.txt`
+- `flake8_report_before.txt` and `flake8_report.txt`
 
-**Target:** aim for a Pylint score above 9.5 on your final file. A perfect 10.00/10 is very good.
+## Conclusion
 
-Be ready to explain the bugs you found and how you fixed them. You may be called on to present.
+This exercise demonstrated how static-analysis tools can identify code-quality problems, security risks, and style violations. Fixing the issues improved maintainability, strengthened several security controls, and corrected a functional bug in the daily fare calculation.
